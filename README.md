@@ -52,17 +52,25 @@
 pip install -r requirements.txt
 ```
 
-### 2. Set your Anthropic API key
+### 2. Install and start Ollama
+Download and install Ollama from [https://ollama.com](https://ollama.com), then pull your desired model:
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+ollama pull llama3
+ollama serve
 ```
 
-### 3. Create a sample test repo
+### 3. Set your Ollama model (optional)
+By default the agent uses `llama3`. Override with:
+```bash
+export OLLAMA_MODEL=mistral
+```
+
+### 4. Create a sample test repo
 ```bash
 python setup_sample_repo.py
 ```
 
-### 4. Run the agent
+### 5. Run the agent
 ```bash
 python main.py
 ```
@@ -93,11 +101,11 @@ python main.py
 
 ## Agent Roles
 
-**Reviewer** — Uses MCP tools to read git diff and files. Sends diff to LLM for analysis. Runs reflection/critic step. Produces `ReviewArtifact`.
+**Reviewer** — Uses MCP tools to read git diff and files. Sends diff to Ollama for analysis. Runs reflection/critic step. Produces `ReviewArtifact`.
 
 **Planner** — Receives `ReviewArtifact`. Decides action. Produces structured `PlanArtifact` with explicit plan steps and rationale.
 
-**Writer** — Receives `PlanArtifact`. Drafts Issue or PR content using LLM. Produces `DraftArtifact`.
+**Writer** — Receives `PlanArtifact`. Drafts Issue or PR content using Ollama. Produces `DraftArtifact`.
 
 **Gatekeeper** — Receives `DraftArtifact`. Runs policy check. Shows full draft to user. Requires explicit approval. Only agent that calls `github_create_*` tools.
 
@@ -107,6 +115,7 @@ python main.py
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | ✅ | Your Anthropic API key |
+| `OLLAMA_MODEL` | ❌ | Ollama model to use (default: `llama3`) |
+| `OLLAMA_BASE_URL` | ❌ | Ollama API base URL (default: `http://localhost:11434`) |
 
 Your GitHub PAT is entered interactively at runtime (not stored in env).
